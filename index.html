@@ -26,7 +26,6 @@
             background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
         }
 
-        /* شريط التنقل */
         .nagi-nav {
             background: rgba(0, 0, 0, 0.95);
             padding: 15px;
@@ -81,7 +80,6 @@
             50% { filter: drop-shadow(0 0 25px var(--gold)); transform: scale(1.05); }
         }
 
-        /* أنيميشن الاهتزاز عند الخطأ */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
@@ -104,9 +102,10 @@
             font-family: 'Orbitron', sans-serif;
             margin-bottom: 20px;
             transition: 0.4s;
+            outline: none;
         }
 
-        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 15px rgba(218, 165, 32, 0.3); }
+        input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(218, 165, 32, 0.3); }
 
         .btn-access {
             background: linear-gradient(45deg, var(--dark-gold), var(--gold));
@@ -143,7 +142,7 @@
             <h1>VIP SYSTEM</h1>
             <p class="sub-text">يرجى إدخال رمز الوصول لفك تشفير المحتوى</p>
             
-            <input type="password" placeholder="ENTER ACCESS CODE" id="vipKey">
+            <input type="password" placeholder="ENTER ACCESS CODE" id="vipKey" onkeypress="if(event.key === 'Enter') verifyAccess()">
             <button class="btn-access" onclick="verifyAccess()">إفتح البوابة 🔓</button>
             
             <p id="errorMessage"><i class="fas fa-exclamation-triangle"></i> رمز غير صحيح! تم تسجيل عنوان الـ IP.</p>
@@ -154,11 +153,12 @@
 
     <script>
         function verifyAccess() {
-            const keyInput = document.getElementById('vipKey').value;
+            // استخدام trim() لإزالة أي مسافات زائدة قد يكتبها المستخدم بالخطأ
+            const keyInput = document.getElementById('vipKey').value.trim();
             const errorMsg = document.getElementById('errorMessage');
             const card = document.getElementById('mainCard');
+            const inputField = document.getElementById('vipKey');
             
-            // قائمة المفاتيح الصالحة
             const validKeys = [
                 "NAGI-PRO-1",
                 "NAGI-PRO-2",
@@ -171,17 +171,15 @@
                 alert("✅ تم التحقق بنجاح! أهلاً بك في منطقة الـ VIP");
                 window.location.href = "https://lokmp25.github.io/nagi-private-storage-v5.0.0_jjjdfilughd/"; 
             } else {
-                // تفعيل رسالة الخطأ
                 errorMsg.style.display = "block";
-                document.getElementById('vipKey').style.borderColor = "#ff0055";
+                inputField.style.borderColor = "#ff0055";
                 
-                // تفعيل أنيميشن الاهتزاز
+                // إعادة تشغيل أنيميشن الاهتزاز
                 card.style.animation = 'none';
-                card.offsetHeight; /* إعادة تشغيل الأنيميشن */
+                void card.offsetWidth; // حيلة تقنية لإعادة تشغيل الـ Animation
                 card.style.animation = "shake 0.3s ease-in-out";
             }
         }
     </script>
 </body>
-
 </html>
