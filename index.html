@@ -150,36 +150,71 @@
 
     <footer>DESIGNED BY NAGI X PRO © 2026</footer>
 
-    <script>
-        function verifyAccess() {
-            // استخدام trim() لإزالة أي مسافات زائدة قد يكتبها المستخدم بالخطأ
-            const keyInput = document.getElementById('vipKey').value.trim();
-            const errorMsg = document.getElementById('errorMessage');
-            const card = document.getElementById('mainCard');
-            const inputField = document.getElementById('vipKey');
-            
-            const validKeys = [
-                "NAGI-PRO-1",
-                "NAGI-PRO-2",
-                "VIP-PLAYER-001",
-                "MEMBER-882",
-                "FREE-TRIAL-99"
-            ]; 
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-            if (validKeys.includes(keyInput)) {
-                alert("✅ تم التحقق بنجاح! أهلاً بك في منطقة الـ VIP");
-                window.location.href = "https://lokmp25.github.io/nagi-private-storage-v5.0.0_jjjdfilughd/"; 
+<script>
+  // بياناتك الحقيقية المستخرجة من الصور التي أرفقتها
+  const firebaseConfig = {
+    apiKey: "AIzaSyDm1s09cxDlZZHh7FaCvQdlgHp8jJKifSk",
+    authDomain: "nagisecurity-8ea5e.firebaseapp.com",
+    databaseURL: "https://nagisecurity-8ea5e-default-rtdb.firebaseio.com",
+    projectId: "nagisecurity-8ea5e",
+    storageBucket: "nagisecurity-8ea5e.firebasestorage.app",
+    messagingSenderId: "588193544383",
+    appId: "1:588193544383:web:0b0fe25668c733861cee0a",
+    measurementId: "G-JQN6YVCGFW"
+  };
+
+  // تشغيل النظام
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  async function verifyAccess() {
+    const keyInput = document.getElementById('vipKey').value.trim();
+    const errorMsg = document.getElementById('errorMessage');
+    const card = document.getElementById('mainCard');
+
+    if (!keyInput) return;
+
+    try {
+        // البحث عن المفتاح في قاعدة بياناتك تحت قسم KEYS
+        const snapshot = await database.ref('KEYS/' + keyInput).get();
+
+        if (snapshot.exists()) {
+            const status = snapshot.val();
+
+            if (status === "unused") {
+                // 1. المفتاح صالح -> نقوم بحرقه (تغييره إلى used)
+                await database.ref('KEYS/' + keyInput).set("used");
+
+                alert("✅ تم التحقق! هذا المفتاح أصبح الآن 'مستعمل' ولن يفتح مرة أخرى.");
+                window.location.href = "https://lokmp25.github.io/download/"; 
             } else {
+                // 2. المفتاح استُخدم من قبل
+                errorMsg.innerText = "❌ هذا الكود استُخدم سابقاً! صلاحيته منتهية.";
                 errorMsg.style.display = "block";
-                inputField.style.borderColor = "#ff0055";
-                
-                // إعادة تشغيل أنيميشن الاهتزاز
-                card.style.animation = 'none';
-                void card.offsetWidth; // حيلة تقنية لإعادة تشغيل الـ Animation
-                card.style.animation = "shake 0.3s ease-in-out";
+                shakeCard(card);
             }
+        } else {
+            // 3. المفتاح غير موجود أصلاً في السيرفر
+            errorMsg.innerText = "❌ الكود غير صحيح! تأكد من الرمز.";
+            errorMsg.style.display = "block";
+            shakeCard(card);
         }
-    </script>
+    } catch (e) {
+        console.error(e);
+        alert("خطأ في الاتصال بالسيرفر! تأكد من إعدادات الـ Rules في Firebase.");
+    }
+  }
+
+  function shakeCard(card) {
+    card.style.animation = 'none';
+    void card.offsetWidth; 
+    card.style.animation = "shake 0.3s ease-in-out";
+  }
+</script>
 </body>
 </html>
+
 
